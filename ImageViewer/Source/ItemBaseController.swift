@@ -260,8 +260,8 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
     // MARK: - Scroll View delegate methods
 
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
-
-        itemView.center = contentCenter(forBoundingSize: scrollView.bounds.size, contentSize: scrollView.contentSize)
+        // No idea why they do this, but this basically breaks zooming
+        // itemView.center = contentCenter(forBoundingSize: scrollView.bounds.size, contentSize: scrollView.contentSize)
     }
 
     @objc func scrollViewDidSingleTap() {
