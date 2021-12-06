@@ -17,7 +17,7 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
 
     //UI
     public var itemView = T()
-    let scrollView = UIScrollView()
+    public let scrollView = UIScrollView()
     let activityIndicatorView = UIActivityIndicatorView(style: .white)
 
     //DELEGATE / DATASOURCE
@@ -261,7 +261,14 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
 
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         // No idea why they do this, but this basically breaks zooming
-        // itemView.center = contentCenter(forBoundingSize: scrollView.bounds.size, contentSize: scrollView.contentSize)
+//         itemView.center = contentCenter(forBoundingSize: scrollView.bounds.size, contentSize: scrollView.contentSize)
+
+        // fix other zooming issues
+        guard let image = itemView.image else { return }
+        let imageViewSize = aspectFitRect(forSize: image.size, insideRect: itemView.frame)
+        let verticalInsets = -(scrollView.contentSize.height - max(imageViewSize.height, scrollView.bounds.height)) / 2
+        let horizontalInsets = -(scrollView.contentSize.width - max(imageViewSize.width, scrollView.bounds.width)) / 2
+        scrollView.contentInset = UIEdgeInsets(top: verticalInsets, left: horizontalInsets, bottom: verticalInsets, right: horizontalInsets)
     }
 
     @objc func scrollViewDidSingleTap() {
@@ -275,25 +282,26 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
     }
 
     @objc func scrollViewDidDoubleTap(_ recognizer: UITapGestureRecognizer) {
+        // this func does not work with the changes above
 
-        let touchPoint = recognizer.location(ofTouch: 0, in: itemView)
-        let aspectFillScale = aspectFillZoomScale(forBoundingSize: scrollView.bounds.size, contentSize: itemView.bounds.size)
+        // let touchPoint = recognizer.location(ofTouch: 0, in: itemView)
+        // let aspectFillScale = aspectFillZoomScale(forBoundingSize: scrollView.bounds.size, contentSize: itemView.bounds.size)
 
-        if (scrollView.zoomScale == 1.0 || scrollView.zoomScale > aspectFillScale) {
+        // if (scrollView.zoomScale == 1.0 || scrollView.zoomScale > aspectFillScale) {
 
-            let zoomRectangle = zoomRect(ForScrollView: scrollView, scale: aspectFillScale, center: touchPoint)
+        //     let zoomRectangle = zoomRect(ForScrollView: scrollView, scale: aspectFillScale, center: touchPoint)
 
-            UIView.animate(withDuration: doubleTapToZoomDuration, animations: { [weak self] in
+        //     UIView.animate(withDuration: doubleTapToZoomDuration, animations: { [weak self] in
 
-                self?.scrollView.zoom(to: zoomRectangle, animated: false)
-                })
-        }
-        else  {
-            UIView.animate(withDuration: doubleTapToZoomDuration, animations: {  [weak self] in
+        //         self?.scrollView.zoom(to: zoomRectangle, animated: false)
+        //         })
+        // }
+        // else  {
+        //     UIView.animate(withDuration: doubleTapToZoomDuration, animations: {  [weak self] in
 
-                self?.scrollView.setZoomScale(1.0, animated: false)
-                })
-        }
+        //         self?.scrollView.setZoomScale(1.0, animated: false)
+        //         })
+        // }
     }
 
     @objc func scrollViewDidSwipeToDismiss(_ recognizer: UIPanGestureRecognizer) {
