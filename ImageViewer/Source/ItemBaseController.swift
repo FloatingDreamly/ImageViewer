@@ -282,26 +282,22 @@ open class ItemBaseController<T: UIView>: UIViewController, ItemController, UIGe
     }
 
     @objc func scrollViewDidDoubleTap(_ recognizer: UITapGestureRecognizer) {
-        // this func does not work with the changes above
+        // from https://github.com/LcTwisk/SimpleImageViewer
+        func zoomRectForScale(scale: CGFloat, center: CGPoint) -> CGRect {
+            var zoomRect = CGRect.zero
+            zoomRect.size.height = itemView.frame.size.height / scale
+            zoomRect.size.width  = itemView.frame.size.width  / scale
+            let newCenter = scrollView.convert(center, from: itemView)
+            zoomRect.origin.x = newCenter.x - (zoomRect.size.width / 2.0)
+            zoomRect.origin.y = newCenter.y - (zoomRect.size.height / 2.0)
+            return zoomRect
+        }
 
-        // let touchPoint = recognizer.location(ofTouch: 0, in: itemView)
-        // let aspectFillScale = aspectFillZoomScale(forBoundingSize: scrollView.bounds.size, contentSize: itemView.bounds.size)
-
-        // if (scrollView.zoomScale == 1.0 || scrollView.zoomScale > aspectFillScale) {
-
-        //     let zoomRectangle = zoomRect(ForScrollView: scrollView, scale: aspectFillScale, center: touchPoint)
-
-        //     UIView.animate(withDuration: doubleTapToZoomDuration, animations: { [weak self] in
-
-        //         self?.scrollView.zoom(to: zoomRectangle, animated: false)
-        //         })
-        // }
-        // else  {
-        //     UIView.animate(withDuration: doubleTapToZoomDuration, animations: {  [weak self] in
-
-        //         self?.scrollView.setZoomScale(1.0, animated: false)
-        //         })
-        // }
+        if scrollView.zoomScale > scrollView.minimumZoomScale {
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+        } else {
+            scrollView.zoom(to: zoomRectForScale(scale: scrollView.maximumZoomScale, center: recognizer.location(in: recognizer.view)), animated: true)
+        }
     }
 
     @objc func scrollViewDidSwipeToDismiss(_ recognizer: UIPanGestureRecognizer) {
