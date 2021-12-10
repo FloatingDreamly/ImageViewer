@@ -18,6 +18,10 @@ func aspectFitSize(forContentOfSize contentSize: CGSize, inBounds bounds: CGSize
     return AVMakeRect(aspectRatio: contentSize, insideRect: CGRect(origin: CGPoint.zero, size: bounds)).size
 }
 
+func aspectFitRect(forSize size: CGSize, insideRect: CGRect) -> CGRect {
+    return AVMakeRect(aspectRatio: size, insideRect: insideRect)
+}
+
 func aspectFitContentSize(forBoundingSize boundingSize: CGSize, contentSize: CGSize) -> CGSize {
 
     return AVMakeRect(aspectRatio: contentSize, insideRect: CGRect(origin: CGPoint.zero, size: boundingSize)).size
